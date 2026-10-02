@@ -30,10 +30,15 @@ public class NotesService {
     }
 
     public NotesResponseDTO update(Long id, NotesRequestDTO dto){
-        Notes notes = notesRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No Note found with the id: " + id));
-        notes.setTitle(dto.getTitle());
-        notes.setBody(dto.getBody());
-        return toResponseDTO(notesRepo.save(notes));
+        Notes note = notesRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No Note found with the id: " + id));
+        note.setTitle(dto.getTitle());
+        note.setBody(dto.getBody());
+        return toResponseDTO(notesRepo.save(note));
+    }
+
+    public void delete(Long id){
+        Notes note = notesRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No Note found with that id: " + id));
+        notesRepo.delete(note);
     }
 
     private Notes toEntity(NotesRequestDTO dto) {
