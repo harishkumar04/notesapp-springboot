@@ -1,5 +1,7 @@
 package com.example.notesapp.service;
 
+import com.example.notesapp.dto.NotesRequestDTO;
+import com.example.notesapp.dto.NotesResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,21 +16,40 @@ import java.util.NoSuchElementException;
 public class NotesService {
     private final NotesRepo notesRepo;
 
-    public Notes create(Notes note) {
-        return notesRepo.save(note);
+    public NotesResponseDTO create(NotesRequestDTO dto) {
+        return toResponseDTO(notesRepo.save(toEntity(dto)));
     }
 
-    public List<Notes> getAll(){
-        return notesRepo.findAll();
+    public List<NotesResponseDTO> getAll(){
+        return notesRepo.findAll().stream().map(note -> toResponseDTO(note)).toList();
 
     }
 
-    public Notes getById(Long id){
-        return notesRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No note found with id: " + id));
+    public NotesResponseDTO getById(Long id){
+        return toResponseDTO(notesRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No note found with id: " + id)));
     }
 
-    public Notes update(Long id, Notes note){
+    public NotesResponseDTO update(Long id, NotesRequestDTO dto){
         Notes notes = notesRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No Note found with the id: " + id));
-
+        notes.setTitle(dto.getTitle());
+        notes.setBody(dto.getBody());
+        return toResponseDTO(notesRepo.save(notes));
     }
+
+    private Notes toEntity(NotesRequestDTO dto) {
+        Notes note = new Notes();
+        note.setTitle(dto.getTitle());
+        note.setBody(dto.getBody());
+        return note;
+    }
+
+    private NotesResponseDTO toResponseDTO(Notes note) {
+        NotesResponseDTO dto = new NotesResponseDTO();
+        dto.setId(note.getId());
+        dto.setTitle(note.getTitle());
+        dto.setBody(note.getBody());
+        dto.setCreatedAt(note.getCreatedAt());
+        return dto;
+    }
+
 }
