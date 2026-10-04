@@ -1,5 +1,6 @@
 package com.example.notesapp.controllers;
 
+import com.example.notesapp.dto.LoginRequestDTO;
 import com.example.notesapp.dto.RegisterRequest;
 import com.example.notesapp.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,10 @@ public class AuthController {
     @PostMapping("/register")
     public void registerRequest(@RequestBody RegisterRequest dto){
         authService.register(dto);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequestDTO dto){
+        return authService.login(dto);
     }
 }
